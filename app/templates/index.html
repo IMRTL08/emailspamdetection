@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Email Spam Detector</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+</head>
+<body>
+    <div class="main-container">
+        <div class="input-section">
+            <h1>Email Spam Detector</h1>
+           <form method="POST">
+    <textarea name="email_text" placeholder="Paste your email content here..." required>{{ request.form.email_text if request.method == 'POST' else '' }}</textarea>
+    <br />
+    <button type="submit" name="submit">Check</button>
+    <button type="submit" name="clear" class="clear-btn">Clear History</button>
+</form>
+
+
+            {% if prediction %}
+                <div class="result {{ 'spam' if prediction == 'Spam' else 'ham' }}">
+                    This message is: {{ prediction }}
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="history-section">
+            <h2>History</h2>
+            {% if history and history|length > 0 %}
+                <ul>
+                    {% for item in history|reverse %}
+                        <li>
+                            <strong>Input:</strong> {{ item.email|e }}<br />
+                            <strong>Result:</strong> {{ item.result }}
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p>No history yet.</p>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>
