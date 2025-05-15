@@ -1,44 +1,120 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  
     <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Email Spam Detector</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+ 
 </head>
 <body>
-    <div class="main-container">
-        <div class="input-section">
-            <h1>Email Spam Detector</h1>
-           <form method="POST">
-    <textarea name="email_text" placeholder="Paste your email content here..." required>{{ request.form.email_text if request.method == 'POST' else '' }}</textarea>
-    <br />
-    <button type="submit" name="submit">Check</button>
-    <button type="submit" name="clear" class="clear-btn">Clear History</button>
+<!-- Dark Mode Toggle -->
+<div class="theme-toggle-outer">
+    <label class="switch">
+        <input type="checkbox" id="themeSwitch">
+        <span class="slider round"></span>
+    </label>
+    <span id="themeLabel">🌞 Light Mode</span>
+</div>
+
+<div class="container">
+    <div class="left">
+        <h1>Email Spam Detector</h1>
+        <!-- <div class="theme-toggle">
+    <label class="switch">
+        <input type="checkbox" id="themeSwitch">
+        <span class="slider round"></span>
+    </label>
+    <span id="themeLabel">🌞 Light Mode</span>
+</div> -->
+
+        <!-- <form id="spamForm" method="POST" action="/">
+            <textarea name="email_content" placeholder="Paste your email content here..." required></textarea>
+            <div class="buttons">
+                <button type="submit" class="check-btn">Check</button>
+                <button type="button" id="clearHistoryBtn" class="clear-btn">Clear History</button>
+            </div>
+        </form> -->
+<form id="spamForm" method="POST" action="/">
+    <textarea name="email_content" placeholder="Paste your email content here..." required></textarea>
+    <div class="buttons">
+        <button type="submit" class="check-btn">Check</button>
+    </div>
 </form>
 
+<!-- Clear history is in a separate form -->
+<form method="POST" action="{{ url_for('clear_history') }}">
+    <div class="buttons">
+        <button type="submit" class="clear-btn">Clear History</button>
+    </div>
+</form>
 
-            {% if prediction %}
-                <div class="result {{ 'spam' if prediction == 'Spam' else 'ham' }}">
-                    This message is: {{ prediction }}
-                </div>
-            {% endif %}
-        </div>
-
-        <div class="history-section">
+    </div>
+    <div class="right">
+        <div class="history">
             <h2>History</h2>
-            {% if history and history|length > 0 %}
+            {% if history %}
                 <ul>
-                    {% for item in history|reverse %}
-                        <li>
-                            <strong>Input:</strong> {{ item.email|e }}<br />
-                            <strong>Result:</strong> {{ item.result }}
-                        </li>
-                    {% endfor %}
+                {% for entry in history %}
+                    <li><strong>Email:</strong> {{ entry.email }} <br> <strong>Result:</strong> {{ entry.result }}</li>
+                {% endfor %}
                 </ul>
             {% else %}
                 <p>No history yet.</p>
             {% endif %}
         </div>
     </div>
+</div>
+<footer>
+    <div>&copy; 2025 Email Spam Detector. All rights reserved.</div>
+    <div class="social-icons">
+        <a href="https://www.instagram.com/shivansshmishra" target="_blank" aria-label="Instagram">
+            <i class="fab fa-instagram"></i>
+        </a>
+        <a href="https://github.com/imrtl08" target="_blank" aria-label="GitHub">
+            <i class="fab fa-github"></i>
+        </a>
+        <a href="mailto:shivanshmishra.0803@gmail.com" target="_blank" aria-label="Gmail">
+            <i class="fas fa-envelope"></i>
+        </a>
+        <a href="tel:+917451806191" target="_blank" aria-label="Phone">
+            <i class="fas fa-phone"></i>
+        </a>
+    </div>
+</footer>
+<!-- 
+<script>
+document.getElementById('clearHistoryBtn').addEventListener('click', function () {
+    fetch('/clear_history', { method: 'POST' })
+        .then(response => {
+            if (response.ok) {
+                location.reload();
+            } else {
+                alert('Failed to clear history');
+            }
+        });
+});R
+</script> -->
+<script>
+    const toggle = document.getElementById('themeSwitch');
+    const label = document.getElementById('themeLabel');
+
+    // Load saved theme
+    if (localStorage.getItem('theme') === 'dark') {
+        document.body.classList.add('dark');
+        toggle.checked = true;
+        label.textContent = '🌙 Dark Mode';
+    }
+
+    toggle.addEventListener('change', () => {
+        document.body.classList.toggle('dark');
+        const theme = document.body.classList.contains('dark') ? 'dark' : 'light';
+        localStorage.setItem('theme', theme);
+        label.textContent = theme === 'dark' ? '🌙 Dark Mode' : '🌞 Light Mode';
+    });
+</script>
+
 </body>
 </html>

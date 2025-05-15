@@ -1,39 +1,25 @@
-from flask import render_template, request, session, redirect, url_for
-from app import app
-import pickle
-import os
+from flask import Flask, render_template, request, redirect, url_for, session
 
-# Load the model and vectorizer
-model_path = os.path.join(app.root_path, 'model', 'spam_model.pkl')
-vectorizer_path = os.path.join(app.root_path, 'model', 'vectorizer.pkl')
-
-with open(model_path, 'rb') as f:
-    model = pickle.load(f)
-
-with open(vectorizer_path, 'rb') as f:
-    vectorizer = pickle.load(f)
+app = Flask(__name__)
+app.secret_key = 'your_secret_key_here'
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
     if 'history' not in session:
         session['history'] = []
 
-    if request.method == 'POST':
-        if 'clear' in request.form:
-            session['history'] = []
-            return redirect(url_for('index'))
+    if request.method == 'POST' and 'email_content' in request.form:
+        email_content = request.form.get('email_content', '')
+        if email_content.strip():
+            result = "Spam" if "buy now" in email_content.lower() else "Not Spam"
+            session['history'].append({'email': email_content, 'result': result})
+            session.modified = True
+    return render_template('index.html', history=session['history'])
 
-        email_text = request.form['email_text']
-        transformed = vectorizer.transform([email_text])
-        prediction = model.predict(transformed)[0]
+@app.route('/clear_history', methods=['POST'])
+def clear_history():
+    session.pop('history', None)
+    return redirect(url_for('index'))
 
-        session['history'].append({
-            'email': email_text,
-            'result': prediction
-        })
-
-        session.modified = True  # Make sure Flask knows session was updated
-
-        return render_template('index.html', prediction=prediction, history=session['history'])
-
-    return render_template('index.html', history=session.get('history', []))
+if __name__ == '__main__':
+    app.run(debug=True)
