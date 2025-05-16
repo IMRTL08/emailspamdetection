@@ -1,3 +1,6 @@
+Made By-SHIVANSH MISHRA
+it was made just for implementing learnings into real time project
+
 # ✉️ Email Spam/Ham Detector
 
 A web application that uses machine learning to classify emails as spam or ham.
@@ -14,4 +17,4 @@ A web application that uses machine learning to classify emails as spam or ham.
    ```bash
    git clone https://github.com/yourusername/email-spam-detector.git
    cd email-spam-detector
-   Made By-SHIVANSH MISHRA
+   
